@@ -9,15 +9,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import reactor.core.publisher.Flux;
+
 @Service
 public class OllamaService {
     
     private static final Logger logger = LoggerFactory.getLogger(OllamaService.class);
     
-    private final OllamaChatModel chatClient;
+    private final ChatClient chatClient;
 
-    public OllamaService(OllamaChatModel chatClient) {
-        this.chatClient = chatClient;
+    public OllamaService(ChatClient.Builder chatClient) {
+        this.chatClient = chatClient.build();
     }
     
     public String generateResponse(String userInput) {
@@ -27,7 +29,7 @@ public class OllamaService {
             Prompt prompt = new Prompt(systemMessage, new UserMessage(userInput));
             logger.debug("Prompt oluşturuldu: {}", prompt);
             
-            String response = chatClient.call(userInput).toString();
+            String response = chatClient.prompt().user(userInput).call().content();
             logger.debug("Alınan yanıt: {}", response);
             
             return response;
@@ -39,5 +41,14 @@ public class OllamaService {
     
     public String getModelInfo() {
         return "DeepSeek-R1 - Ollama üzerinden çalışan güçlü bir dil modeli";
+    }
+
+    public Flux<String> streamResponse(String userInput) {
+        return 
+        chatClient.prompt()
+        .user(userInput)
+        .stream()
+        .content();
+                
     }
 }

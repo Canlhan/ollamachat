@@ -1,6 +1,9 @@
 package com.ollamachat.ollamachat.api;
 
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Flux;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +14,7 @@ import com.ollamachat.ollamachat.Servies.OllamaService;
 
 @RestController
 @RequestMapping("/api/chat")
+@CrossOrigin(origins = "*")
 public class ChatController {
     
     private final OllamaService ollamaDeepSeekService;
@@ -19,10 +23,15 @@ public class ChatController {
         this.ollamaDeepSeekService = ollamaDeepSeekService;
     }
 
-    @GetMapping("")
-    public String generateResponse() {
-        String response = ollamaDeepSeekService.generateResponse("bir şaka söyle ");
+    @PostMapping("/generate")
+    public String generateResponse(@RequestBody String userInput) {
+        String response = ollamaDeepSeekService.generateResponse(userInput);
         return response;
+    }
+
+    @PostMapping("/stream")
+    public Flux<String> streamResponse(@RequestBody String userInput) {
+        return ollamaDeepSeekService.streamResponse(userInput);
     }
     
 }
