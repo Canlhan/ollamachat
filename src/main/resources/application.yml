@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: ollamachat
+  ai:
+    ollama:
+      url: http://localhost:11434
+      model: deepseek-r1:32b
+      chat:
+        options:
+          model: qwen2.5-coder:14b
+      embedding:
+        options:
+          model: nomic-embed-text
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 768
+        batching-strategy: TOKEN_COUNT
+        max-document-batch-size: 10000
+        initialize-schema: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: huseyincanilhan
+    password: 123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.ollamachat.ollamachat: DEBUG
+    org.springframework.ai: DEBUG 
+    org.springframework.ai.chat.metadata: error
